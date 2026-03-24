@@ -167,13 +167,28 @@ const Frame: React.FC<FrameProps> = ({
               style={{ ...baseStyles, backgroundColor: elementStyles.backgroundColor || '#09090b', color: elementStyles.color || '#fff' }}
               className="flex items-center justify-between w-full"
             >
-              <div className="text-xl font-black tracking-tighter">{element.title}</div>
+              <div
+                className="font-black tracking-tighter"
+                style={{ fontSize: '1.25em' }}
+              >
+                {element.title}
+              </div>
               <div className="hidden md:flex items-center gap-8">
                 {element.links?.map((link, i) => (
-                  <a key={i} href={link.url} className="text-sm font-medium opacity-70 hover:opacity-100 transition-opacity" style={{ color: elementStyles.color }}>{link.label}</a>
+                  <a
+                    key={i}
+                    href={link.url}
+                    className="font-medium opacity-70 hover:opacity-100 transition-opacity"
+                    style={{ color: elementStyles.color, fontSize: '0.875em' }}
+                  >
+                    {link.label}
+                  </a>
                 ))}
               </div>
-              <button className="px-5 py-2 rounded-xl bg-emerald-500 text-white text-sm font-bold shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition-colors">
+              <button
+                className="px-5 py-2 rounded-xl bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition-colors"
+                style={{ fontSize: '0.875em' }}
+              >
                 {element.buttonText}
               </button>
             </div>

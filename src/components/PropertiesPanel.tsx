@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { WebsiteElement, Frame, TableRow, TableCell } from '../types';
+import React from 'react';
+import { WebsiteElement, Frame, TableRow } from '../types';
 import { Settings, Type, Palette, Trash2, X, Sparkles, Image as ImageIcon, Box, Layers, Maximize, Move, AlignLeft, AlignCenter, AlignRight, AlignJustify, Bold, Italic, Underline, Strikethrough, Eye, EyeOff, RotateCw, ZoomIn, MousePointer2, Layout, Table as TableIcon, Plus, Minus } from 'lucide-react';
 
 interface PropertiesPanelProps {
@@ -12,6 +12,65 @@ interface PropertiesPanelProps {
   onOpenAIModal?: () => void;
 }
 
+const SectionHeader: React.FC<{
+  icon: React.ComponentType<{ size?: number }>;
+  title: string;
+}> = ({ icon: Icon, title }) => (
+  <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-4 first:mt-0">
+    <Icon size={12} />
+    {title}
+  </div>
+);
+
+const PropertyGroup: React.FC<{
+  label: string;
+  children: React.ReactNode;
+}> = ({ label, children }) => (
+  <div className="flex flex-col gap-2">
+    <label className="text-[10px] text-zinc-500 font-medium">{label}</label>
+    {children}
+  </div>
+);
+
+const ColorPicker: React.FC<{
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  presets?: string[];
+}> = ({ label, value, onChange, presets }) => (
+  <PropertyGroup label={label}>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
+        <input
+          type="color"
+          value={value || '#000000'}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 cursor-pointer overflow-hidden"
+        />
+        <input
+          type="text"
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500"
+          placeholder="#000000"
+        />
+      </div>
+      {presets && (
+        <div className="flex flex-wrap gap-1.5 mt-1">
+          {presets.map((preset) => (
+            <button
+              key={preset}
+              onClick={() => onChange(preset)}
+              className={`w-5 h-5 rounded-full border border-zinc-800 transition-transform hover:scale-125 ${value === preset ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-zinc-950' : ''}`}
+              style={{ backgroundColor: preset }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </PropertyGroup>
+);
+
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ 
   element, 
   frame, 
@@ -21,7 +80,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onClose, 
   onOpenAIModal 
 }) => {
-  const [editingCell, setEditingCell] = useState<{ rowId: string, cellId: string } | null>(null);
   if (!element && !frame) return null;
 
   const handleStyleChange = (key: string, value: any) => {
@@ -177,54 +235,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     { value: 'triangle', label: 'Triangle' },
     { value: 'star', label: 'Star' },
   ];
-
-  const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
-    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-4 first:mt-0">
-      <Icon size={12} />
-      {title}
-    </div>
-  );
-
-  const PropertyGroup = ({ label, children }: { label: string, children: React.ReactNode }) => (
-    <div className="flex flex-col gap-2">
-      <label className="text-[10px] text-zinc-500 font-medium">{label}</label>
-      {children}
-    </div>
-  );
-
-  const ColorPicker = ({ label, value, onChange, presets }: { label: string, value: string, onChange: (val: string) => void, presets?: string[] }) => (
-    <PropertyGroup label={label}>
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
-          <input
-            type="color"
-            value={value || '#000000'}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 cursor-pointer overflow-hidden"
-          />
-          <input
-            type="text"
-            value={value || ''}
-            onChange={(e) => onChange(e.target.value)}
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500"
-            placeholder="#000000"
-          />
-        </div>
-        {presets && (
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            {presets.map((preset) => (
-              <button
-                key={preset}
-                onClick={() => onChange(preset)}
-                className={`w-5 h-5 rounded-full border border-zinc-800 transition-transform hover:scale-125 ${value === preset ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-zinc-950' : ''}`}
-                style={{ backgroundColor: preset }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </PropertyGroup>
-  );
 
   return (
     <div className="w-80 bg-zinc-950/80 backdrop-blur-xl border-l border-zinc-800 p-6 flex flex-col gap-8 h-full overflow-y-auto custom-scrollbar shadow-2xl">
